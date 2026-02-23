@@ -5,11 +5,12 @@ import yfinance as yf
 import plotly.graph_objects as go
 from scipy.optimize import minimize
 from data_utils import get_data
-from optimization import optimize_portfolio, calculate_sharpe_ratio, calculate_max_drawdown
+from optimization import optimize_portfolio
 from visualization import plot_efficient_frontier, plot_sector_allocation, plot_correlation_matrix
 from metrics import display_metrics
 from backtest import backtest_portfolio
 from monte_carlo import monte_carlo_simulation
+
 
 # Page config
 st.set_page_config(page_title="Portfolio Optimization", layout="wide")
