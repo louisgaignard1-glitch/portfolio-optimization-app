@@ -1,20 +1,8 @@
-
-
 import plotly.graph_objects as go
 import pandas as pd
 import streamlit as st
 import numpy as np
 from scipy.optimize import minimize
-
-# Vérification des données pour l'efficient frontier
-st.write("Vérification des données pour l'efficient frontier :")
-st.write("result_min_var.success :", result_min_var.success)
-st.write("mu :", mu)
-st.write("Sigma :", Sigma)
-st.write("assets :", assets)
-
-# Appel de la fonction
-plot_efficient_frontier(result_min_var, mu, Sigma, assets)
 
 def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
     if not result_min_var.success:
@@ -85,7 +73,6 @@ def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
 
     st.plotly_chart(fig)
 
-
 def plot_sector_allocation(allocation):
     sectors = {
         "ENGI.PA": "Énergie", "BNP.PA": "Finance", "ACA.PA": "Industrie",
@@ -94,13 +81,6 @@ def plot_sector_allocation(allocation):
     }
     sector_allocation = allocation.assign(Secteur=lambda x: x.index.map(sectors)).groupby("Secteur").sum()
     st.bar_chart(sector_allocation)
-
-# Vérification des données pour la matrice de corrélation
-st.write("Vérification des données pour la matrice de corrélation :")
-st.write("returns :", returns)
-
-# Appel de la fonction
-plot_correlation_matrix(returns)
 
 def plot_correlation_matrix(returns):
     if returns.empty:
