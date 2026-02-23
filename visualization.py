@@ -6,7 +6,25 @@ import streamlit as st
 import numpy as np
 from scipy.optimize import minimize
 
+# Vérification des données pour l'efficient frontier
+st.write("Vérification des données pour l'efficient frontier :")
+st.write("result_min_var.success :", result_min_var.success)
+st.write("mu :", mu)
+st.write("Sigma :", Sigma)
+st.write("assets :", assets)
+
+# Appel de la fonction
+plot_efficient_frontier(result_min_var, mu, Sigma, assets)
+
 def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
+    if not result_min_var.success:
+        st.error("L'optimisation a échoué. Impossible de tracer l'efficient frontier.")
+        return
+
+    if mu.empty or Sigma.empty:
+        st.error("Les données de rendements ou de covariance sont vides.")
+        return
+
     target_returns = np.linspace(mu.min(), mu.max(), 20)
     frontier_vols = []
     frontier_returns = []
@@ -28,6 +46,10 @@ def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
         if result.success:
             frontier_vols.append(np.sqrt(np.dot(result.x.T, np.dot(Sigma, result.x))))
             frontier_returns.append(target_return)
+
+    if not frontier_vols or not frontier_returns:
+        st.error("Aucune donnée valide pour tracer l'efficient frontier.")
+        return
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -63,6 +85,7 @@ def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
 
     st.plotly_chart(fig)
 
+
 def plot_sector_allocation(allocation):
     sectors = {
         "ENGI.PA": "Énergie", "BNP.PA": "Finance", "ACA.PA": "Industrie",
@@ -72,7 +95,18 @@ def plot_sector_allocation(allocation):
     sector_allocation = allocation.assign(Secteur=lambda x: x.index.map(sectors)).groupby("Secteur").sum()
     st.bar_chart(sector_allocation)
 
+# Vérification des données pour la matrice de corrélation
+st.write("Vérification des données pour la matrice de corrélation :")
+st.write("returns :", returns)
+
+# Appel de la fonction
+plot_correlation_matrix(returns)
+
 def plot_correlation_matrix(returns):
+    if returns.empty:
+        st.error("Les données de rendements sont vides. Impossible de tracer la matrice de corrélation.")
+        return
+
     corr_matrix = returns.corr()
     fig = go.Figure(data=go.Heatmap(
         z=corr_matrix.values,
