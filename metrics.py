@@ -7,20 +7,17 @@ Original file is located at
     https://colab.research.google.com/drive/1t-gTPI-a6Ta3tmTdijY9BX8MRbx3s62-
 """
 
-# Commented out IPython magic to ensure Python compatibility.
-# %%writefile utils/metrics.py
-# import streamlit as st
-# 
-# def display_metrics(result_min_var, mu, Sigma, returns):
-#     if result_min_var.success:
-#         from utils.optimization import calculate_sharpe_ratio, calculate_max_drawdown
-# 
-#         weights = result_min_var.x
-#         portfolio_returns = returns.dot(weights)
-# 
-#         sharpe_ratio = calculate_sharpe_ratio(weights, mu, Sigma)
-#         max_drawdown = calculate_max_drawdown(portfolio_returns)
-# 
-#         st.metric("Sharpe Ratio", f"{sharpe_ratio:.2f}")
-#         st.metric("Maximum Drawdown", f"{max_drawdown:.2%}")
-#
+import streamlit as st
+
+def display_metrics(result_min_var, mu, Sigma, returns):
+    if result_min_var.success:
+        from utils.optimization import calculate_sharpe_ratio, calculate_max_drawdown
+
+        weights = result_min_var.x
+        portfolio_returns = returns.dot(weights)
+
+        sharpe_ratio = calculate_sharpe_ratio(weights, mu, Sigma)
+        max_drawdown = calculate_max_drawdown(portfolio_returns)
+
+        st.metric("Sharpe Ratio", f"{sharpe_ratio:.2f}")
+        st.metric("Maximum Drawdown", f"{max_drawdown:.2%}")

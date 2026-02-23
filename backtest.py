@@ -7,18 +7,15 @@ Original file is located at
     https://colab.research.google.com/drive/1u-5TbsyKuASQe7Eoskw3ASv394aNUlN6
 """
 
-# Commented out IPython magic to ensure Python compatibility.
-# %%writefile utils/backtest.py
-# import pandas as pd
-# 
-# def backtest_portfolio(data, allocation):
-#     returns = data.pct_change().dropna()
-# 
-#     # alignement des poids
-#     weights = allocation['Poids'].reindex(returns.columns).fillna(0)
-# 
-#     portfolio_returns = returns.dot(weights)
-#     cumulative_returns = (1 + portfolio_returns).cumprod()
-# 
-#     return cumulative_returns
-#
+import pandas as pd
+
+def backtest_portfolio(data, allocation):
+    returns = data.pct_change().dropna()
+
+    # alignement des poids
+    weights = allocation['Poids'].reindex(returns.columns).fillna(0)
+
+    portfolio_returns = returns.dot(weights)
+    cumulative_returns = (1 + portfolio_returns).cumprod()
+
+    return cumulative_returns

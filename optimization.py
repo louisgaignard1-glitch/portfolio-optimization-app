@@ -7,46 +7,43 @@ Original file is located at
     https://colab.research.google.com/drive/1gt7rQD9ScVyd9gKwlzTl0GXLyGztV_RH
 """
 
-# Commented out IPython magic to ensure Python compatibility.
-# %%writefile utils/optimization.py
-# import numpy as np
-# import pandas as pd
-# from scipy.optimize import minimize
-# 
-# def optimize_portfolio(mu, Sigma, assets):
-#     n = len(assets)
-# 
-#     def port_return(weights):
-#         return np.dot(weights, mu)
-# 
-#     def port_vol(weights):
-#         return np.sqrt(np.dot(weights.T, np.dot(Sigma, weights)))
-# 
-#     initial_weights = np.ones(n) / n
-#     constraints = ({'type': 'eq', 'fun': lambda w: np.sum(w) - 1})
-#     bounds = tuple((0, 1) for _ in range(n))
-# 
-#     result_min_var = minimize(
-#         port_vol,
-#         initial_weights,
-#         method='SLSQP',
-#         bounds=bounds,
-#         constraints=constraints
-#     )
-# 
-#     allocation = pd.DataFrame({'Poids': result_min_var.x}, index=assets)
-# 
-# 
-#     return result_min_var, allocation
-# 
-# def calculate_sharpe_ratio(weights, mu, Sigma, risk_free_rate=0.02):
-#     port_return = np.dot(weights, mu)
-#     port_vol = np.sqrt(np.dot(weights.T, np.dot(Sigma, weights)))
-#     return float((port_return - risk_free_rate) / port_vol)  # Assurez-vous de retourner un float
-# 
-# def calculate_max_drawdown(returns):
-#     cumulative_returns = (1 + returns).cumprod()
-#     peak = cumulative_returns.expanding(min_periods=1).max()
-#     drawdown = (cumulative_returns - peak) / peak
-#     return float(drawdown.min())  # Assurez-vous de retourner un float
-#
+import numpy as np
+import pandas as pd
+from scipy.optimize import minimize
+
+def optimize_portfolio(mu, Sigma, assets):
+    n = len(assets)
+
+    def port_return(weights):
+        return np.dot(weights, mu)
+
+    def port_vol(weights):
+        return np.sqrt(np.dot(weights.T, np.dot(Sigma, weights)))
+
+    initial_weights = np.ones(n) / n
+    constraints = ({'type': 'eq', 'fun': lambda w: np.sum(w) - 1})
+    bounds = tuple((0, 1) for _ in range(n))
+
+    result_min_var = minimize(
+        port_vol,
+        initial_weights,
+        method='SLSQP',
+        bounds=bounds,
+        constraints=constraints
+    )
+
+    allocation = pd.DataFrame({'Poids': result_min_var.x}, index=assets)
+
+
+    return result_min_var, allocation
+
+def calculate_sharpe_ratio(weights, mu, Sigma, risk_free_rate=0.02):
+    port_return = np.dot(weights, mu)
+    port_vol = np.sqrt(np.dot(weights.T, np.dot(Sigma, weights)))
+    return float((port_return - risk_free_rate) / port_vol)  # Assurez-vous de retourner un float
+
+def calculate_max_drawdown(returns):
+    cumulative_returns = (1 + returns).cumprod()
+    peak = cumulative_returns.expanding(min_periods=1).max()
+    drawdown = (cumulative_returns - peak) / peak
+    return float(drawdown.min())  # Assurez-vous de retourner un float
