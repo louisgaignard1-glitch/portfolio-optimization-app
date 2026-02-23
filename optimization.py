@@ -1,5 +1,3 @@
-
-
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
@@ -27,16 +25,15 @@ def optimize_portfolio(mu, Sigma, assets):
 
     allocation = pd.DataFrame({'Poids': result_min_var.x}, index=assets)
 
-
     return result_min_var, allocation
 
 def calculate_sharpe_ratio(weights, mu, Sigma, risk_free_rate=0.02):
     port_return = np.dot(weights, mu)
     port_vol = np.sqrt(np.dot(weights.T, np.dot(Sigma, weights)))
-    return float((port_return - risk_free_rate) / port_vol)  # Assurez-vous de retourner un float
+    return float((port_return - risk_free_rate) / port_vol)
 
 def calculate_max_drawdown(returns):
     cumulative_returns = (1 + returns).cumprod()
     peak = cumulative_returns.expanding(min_periods=1).max()
     drawdown = (cumulative_returns - peak) / peak
-    return float(drawdown.min())  # Assurez-vous de retourner un float
+    return float(drawdown.min())
