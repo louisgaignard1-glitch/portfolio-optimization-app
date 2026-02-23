@@ -11,7 +11,6 @@ from metrics import display_metrics
 from backtest import backtest_portfolio
 from monte_carlo import monte_carlo_simulation
 
-
 # Page config
 st.set_page_config(page_title="Portfolio Optimization", layout="wide")
 
@@ -38,21 +37,11 @@ if data.empty:
 
 # Returns
 returns = data.pct_change().dropna()
-st.write("Vérification des données de rendements :")
-st.write(returns)
-
 mu = returns.mean() * 252
 Sigma = returns.cov() * 252
 
-st.write("Vérification de mu et Sigma :")
-st.write("mu :", mu)
-st.write("Sigma :", Sigma)
-
 # Optimization
 result_min_var, allocation = optimize_portfolio(mu, Sigma, assets)
-st.write("Vérification des résultats d'optimisation :")
-st.write("result_min_var.success :", result_min_var.success)
-st.write("allocation :", allocation)
 
 # Manual allocation
 st.header("🎛️ Manual Allocation")
@@ -110,13 +99,6 @@ st.plotly_chart(fig_alloc, use_container_width=True)
 display_metrics(result_min_var, mu, Sigma, returns)
 
 # Efficient frontier
-st.header("📊 Efficient Frontier")
-st.write("Vérification des données pour l'efficient frontier :")
-st.write("result_min_var.success :", result_min_var.success)
-st.write("mu :", mu)
-st.write("Sigma :", Sigma)
-st.write("assets :", assets)
-
 plot_efficient_frontier(result_min_var, mu, Sigma, assets)
 
 # Sector allocation
@@ -125,27 +107,16 @@ plot_sector_allocation(weights_used)
 
 # Correlation matrix
 st.header("🔗 Asset Correlation Matrix")
-st.write("Vérification des données pour la matrice de corrélation :")
-st.write("returns :", returns)
-
 plot_correlation_matrix(returns)
 
 # Backtest
 st.header("📈 Historical Cumulative Performance")
 portfolio_performance = backtest_portfolio(data, weights_used)
-st.write("Vérification des données pour le backtest :")
-st.write("portfolio_performance :", portfolio_performance)
-
 st.line_chart(portfolio_performance)
 
 # Monte Carlo
 st.header("🔮 Monte Carlo Simulation (Fan Chart, VaR & CVaR)")
 n_sim = st.sidebar.slider("Monte Carlo simulations", 100, 800, 300)
-st.write("Vérification des données pour la simulation Monte Carlo :")
-st.write("mu :", mu)
-st.write("Sigma :", Sigma)
-st.write("weights_used :", weights_used)
-
 percentiles, var_95, cvar_95 = monte_carlo_simulation(mu, Sigma, weights_used)
 
 col1, col2 = st.columns(2)
