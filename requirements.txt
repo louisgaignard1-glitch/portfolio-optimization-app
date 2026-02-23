@@ -1,8 +1,8 @@
 streamlit
-yfinance
-scipy
-plotly
-fpdf
-requests
-pandas
 numpy
+pandas
+yfinance
+plotly
+scipy
+requests
+fpdf
