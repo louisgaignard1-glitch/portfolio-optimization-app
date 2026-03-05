@@ -88,16 +88,9 @@ def plot_sector_allocation(allocation):
 
     sector_allocation["Secteur"] = sector_allocation.index.map(sectors)
 
-    # si un ticker n'est pas reconnu
     sector_allocation["Secteur"] = sector_allocation["Secteur"].fillna("Autre")
 
     sector_allocation = sector_allocation.groupby("Secteur")["Poids"].sum()
-
-    st.bar_chart(sector_allocation)
-
-    sector_allocation = allocation.assign(
-        Secteur=lambda x: x.index.map(sectors)
-    ).groupby("Secteur").sum()
 
     st.bar_chart(sector_allocation)
 
@@ -115,3 +108,4 @@ def plot_correlation_matrix(returns):
     )
 
     st.plotly_chart(fig)
+
