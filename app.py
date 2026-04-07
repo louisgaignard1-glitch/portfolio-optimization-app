@@ -18,12 +18,12 @@ st.title("📈 Louis GAIGNARD Portfolio Optimization with Python (Markowitz, Mon
 assets = st.multiselect(
     "Select your assets",
     options=[
-        "ENGI.PA","BNP.PA","ACA.PA","GLE.PA","TTE.PA","MC.PA","OR.PA","AIR.PA",
+        "ENGI.PA","BNP.PA","ACA.PA","GLE.PA","MC.PA","OR.PA","AIR.PA",
         "RNO.PA","VK.PA","KER.PA","RMS.PA","SAF.PA","HO.PA","SU.PA","CAP.PA",
         "STMPA.PA","EDF.PA","VIE.PA","EN.PA","SAN.PA","SGO.PA","ORA.PA",
         "CA.PA","RI.PA","DG.PA","AI.PA"
     ],
-    default=["ENGI.PA","BNP.PA","TTE.PA","MC.PA","GLE.PA","VK.PA","ACA.PA","RNO.PA"]
+    default=["ENGI.PA","BNP.PA","MC.PA","GLE.PA","VK.PA","ACA.PA","RNO.PA"]
 )
 
 if len(assets) < 2:
