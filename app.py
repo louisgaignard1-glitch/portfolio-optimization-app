@@ -23,7 +23,7 @@ assets = st.multiselect(
         "STMPA.PA","EDF.PA","VIE.PA","EN.PA","SAN.PA","SGO.PA","ORA.PA",
         "CA.PA","RI.PA","DG.PA","AI.PA"
     ],
-    default=["ENGI.PA","BNP.PA","TTE.PA","MC.PA","GLE.PA","VK.PA","ACA.PA","RNO.PA"]
+    default=["ENGI.PA","BNP.PA","MC.PA","GLE.PA","VK.PA","ACA.PA","RNO.PA"]
 )
 
 if len(assets) < 2:
