@@ -10,19 +10,16 @@ def backtest_portfolio(data, allocation):
 
     fig = go.Figure()
 
-    fig.add_trace(
-        go.Scatter(
-            x=cumulative_returns.index,
-            y=cumulative_returns.values,
-            mode="lines",
-            name="Portfolio",
-            line=dict(color="#00b4d8", width=2),
-            fill="tozeroy",
-            fillcolor="rgba(0,180,216,0.10)",
-        )
-    )
+    fig.add_trace(go.Scatter(
+        x=cumulative_returns.index,
+        y=cumulative_returns.values,
+        mode="lines",
+        name="Portfolio",
+        line=dict(color="#00b4d8", width=2),
+        fill="tozeroy",
+        fillcolor="rgba(0,180,216,0.10)",
+    ))
 
-    # Reference line at 1 (initial investment)
     fig.add_hline(
         y=1.0,
         line_dash="dash",
@@ -43,5 +40,4 @@ def backtest_portfolio(data, allocation):
 
     st.plotly_chart(fig, use_container_width=True, key="backtest")
 
-    # Return the series in case the caller still needs it
     return cumulative_returns
