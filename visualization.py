@@ -76,7 +76,7 @@ def plot_correlation_matrix(returns):
         title="Matrice de corrélation des actifs",
         xaxis_title="Actifs",
         yaxis_title="Actifs",
-        width=800,
-        height=800,
+        width=400,
+        height=400,
     )
     st.plotly_chart(fig, use_container_width=True)
