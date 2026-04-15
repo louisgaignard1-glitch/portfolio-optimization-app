@@ -129,7 +129,7 @@ fig_alloc.update_layout(
     template="plotly_dark",
 )
 
-st.plotly_chart(fig_alloc, use_container_width=True, key="allocation")
+st.plotly_chart(fig_alloc, use_container_width=True, key="allocation_comparison")
 
 
 # --------------------------------------------------
@@ -167,7 +167,7 @@ plot_correlation_matrix(returns)
 
 
 # --------------------------------------------------
-# BACKTEST  (backtest_portfolio now renders the chart itself)
+# BACKTEST
 # --------------------------------------------------
 
 st.header("📈 Historical Cumulative Performance")
@@ -194,9 +194,9 @@ col1, col2 = st.columns(2)
 col1.metric("VaR 95%",  f"{var_95:.2%}")
 col2.metric("CVaR 95%", f"{cvar_95:.2%}")
 
-fig = go.Figure()
+fig_mc = go.Figure()
 
-fig.add_trace(go.Scatter(
+fig_mc.add_trace(go.Scatter(
     x=percentiles["p95"].index,
     y=percentiles["p95"],
     line=dict(width=0),
@@ -204,7 +204,7 @@ fig.add_trace(go.Scatter(
     name="p95",
 ))
 
-fig.add_trace(go.Scatter(
+fig_mc.add_trace(go.Scatter(
     x=percentiles["p5"].index,
     y=percentiles["p5"],
     fill="tonexty",
@@ -213,7 +213,7 @@ fig.add_trace(go.Scatter(
     line=dict(width=0),
 ))
 
-fig.add_trace(go.Scatter(
+fig_mc.add_trace(go.Scatter(
     x=percentiles["p75"].index,
     y=percentiles["p75"],
     line=dict(width=0),
@@ -221,7 +221,7 @@ fig.add_trace(go.Scatter(
     name="p75",
 ))
 
-fig.add_trace(go.Scatter(
+fig_mc.add_trace(go.Scatter(
     x=percentiles["p25"].index,
     y=percentiles["p25"],
     fill="tonexty",
@@ -230,17 +230,17 @@ fig.add_trace(go.Scatter(
     line=dict(width=0),
 ))
 
-fig.add_trace(go.Scatter(
+fig_mc.add_trace(go.Scatter(
     x=percentiles["p50"].index,
     y=percentiles["p50"],
     name="Median",
     line=dict(width=3, color="#00b4d8"),
 ))
 
-fig.add_hline(y=1.0, line_dash="dash", line_color="gray",
-              annotation_text="Initial value")
+fig_mc.add_hline(y=1.0, line_dash="dash", line_color="gray",
+                 annotation_text="Initial value")
 
-fig.update_layout(
+fig_mc.update_layout(
     title="Probabilistic Fan Chart",
     xaxis_title="Date",
     yaxis_title="Portfolio Value (base 1)",
@@ -249,4 +249,4 @@ fig.update_layout(
     height=500,
 )
 
-st.plotly_chart(fig, use_container_width=True, key="monte_carlo")
+st.plotly_chart(fig_mc, use_container_width=True, key="monte_carlo")
