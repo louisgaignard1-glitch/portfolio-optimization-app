@@ -129,7 +129,7 @@ fig_alloc.update_layout(
     template="plotly_dark",
 )
 
-st.plotly_chart(fig_alloc, use_container_width=True)
+st.plotly_chart(fig_alloc, use_container_width=True, key="allocation")
 
 
 # --------------------------------------------------
@@ -249,4 +249,4 @@ fig.update_layout(
     height=500,
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True, key="monte_carlo")
