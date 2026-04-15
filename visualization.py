@@ -68,7 +68,7 @@ def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
         legend=dict(orientation="h", y=-0.15),
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, key="efficient_frontier")
 
 
 def plot_sector_allocation(allocation):
@@ -121,7 +121,7 @@ def plot_sector_allocation(allocation):
         template="plotly_dark",
         height=400,
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, key="sector_allocation")  
 
 
 def plot_correlation_matrix(returns):
@@ -152,4 +152,4 @@ def plot_correlation_matrix(returns):
         margin=dict(l=100, b=120),
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, key="correlation_matrix")
