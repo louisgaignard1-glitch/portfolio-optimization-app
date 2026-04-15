@@ -5,65 +5,44 @@ from scipy.optimize import minimize
 
 
 def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
-    n = len(assets)
-    target_returns = np.linspace(float(mu.min()), float(mu.max()), 40)
+    target_returns = np.linspace(mu.min(), mu.max(), 20)
     frontier_vols = []
-    frontier_rets = []
-
     for target_return in target_returns:
         constraints = (
-            {"type": "eq", "fun": lambda w: np.sum(w) - 1},
-            {"type": "eq", "fun": lambda w, tr=target_return: np.dot(w, mu.values) - tr},
+            {'type': 'eq', 'fun': lambda w: np.sum(w) - 1},
+            {'type': 'eq', 'fun': lambda w, tr=target_return: np.dot(w, mu) - tr}
         )
         result = minimize(
-            lambda w: np.sqrt(np.dot(w.T, np.dot(Sigma.values, w))),
-            np.ones(n) / n,
-            method="SLSQP",
+            lambda w: np.sqrt(np.dot(w.T, np.dot(Sigma, w))),
+            np.ones(len(assets)) / len(assets),
+            method='SLSQP',
             bounds=tuple((0, 1) for _ in assets),
-            constraints=constraints,
-            options={"ftol": 1e-9, "maxiter": 1000},
+            constraints=constraints
         )
         if result.success:
-            vol = np.sqrt(np.dot(result.x.T, np.dot(Sigma.values, result.x)))
-            frontier_vols.append(float(vol))
-            frontier_rets.append(float(target_return))
+            frontier_vols.append(np.sqrt(np.dot(result.x.T, np.dot(Sigma, result.x))))
+        else:
+            print(f"Optimisation échouée pour le rendement cible {target_return}")
+            frontier_vols.append(np.nan)  # ou une valeur par défaut
 
-    mv_weights = result_min_var.x
-    mv_vol = float(np.sqrt(mv_weights @ Sigma.values @ mv_weights))
-    mv_ret = float(np.dot(mv_weights, mu.values))
+    # Supprimez les valeurs NaN si nécessaire
+    frontier_vols = [vol for vol in frontier_vols if not np.isnan(vol)]
+    target_returns = target_returns[:len(frontier_vols)]
 
     fig = go.Figure()
-
-    if frontier_vols:
-        fig.add_trace(go.Scatter(
-            x=frontier_vols,
-            y=frontier_rets,
-            mode="lines+markers",
-            name="Efficient Frontier",
-            line=dict(color="#00b4d8", width=2),
-            marker=dict(size=5),
-        ))
-
     fig.add_trace(go.Scatter(
-        x=[mv_vol],
-        y=[mv_ret],
-        mode="markers",
-        name="Min Variance",
-        marker=dict(color="red", size=12, symbol="star"),
+        x=frontier_vols,
+        y=target_returns,
+        mode='lines+markers',
+        name='Frontière efficace'
     ))
-
     fig.update_layout(
-        title="Efficient Frontier (Markowitz)",
-        xaxis_title="Annualised Volatility",
-        yaxis_title="Annualised Return",
-        xaxis=dict(tickformat=".1%"),
-        yaxis=dict(tickformat=".1%"),
-        template="plotly_dark",
-        height=500,
-        legend=dict(orientation="h", y=-0.15),
+        title="Frontière efficace du portefeuille",
+        xaxis_title="Volatilité annualisée (écart-type)",
+        yaxis_title="Rendement annualisé",
+        template="plotly_dark"
     )
-
-    st.plotly_chart(fig, use_container_width=True, key="efficient_frontier")
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def plot_sector_allocation(allocation):
