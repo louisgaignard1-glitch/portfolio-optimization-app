@@ -34,9 +34,8 @@ def monte_carlo_simulation(mu, Sigma, allocation, n_simulations=400, n_days=252)
 
     cumulative = (1 + simulations).cumprod(axis=0)
 
-    # ── Build a proper date index so the x-axis is readable ──────────────────
     today = pd.Timestamp.today().normalize()
-    date_index = pd.bdate_range(start=today, periods=n_days)   # business days
+    date_index = pd.bdate_range(start=today, periods=n_days)
 
     df = pd.DataFrame(cumulative, index=date_index)
 
