@@ -41,7 +41,7 @@ def backtest_portfolio(data, allocation):
         hovermode="x unified",
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, key="backtest")
 
     # Return the series in case the caller still needs it
     return cumulative_returns
