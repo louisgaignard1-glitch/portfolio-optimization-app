@@ -28,7 +28,6 @@ def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
             frontier_vols.append(float(vol))
             frontier_rets.append(float(target_return))
 
-    # Min-variance point
     mv_weights = result_min_var.x
     mv_vol = float(np.sqrt(mv_weights @ Sigma.values @ mv_weights))
     mv_ret = float(np.dot(mv_weights, mu.values))
@@ -36,26 +35,22 @@ def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
     fig = go.Figure()
 
     if frontier_vols:
-        fig.add_trace(
-            go.Scatter(
-                x=frontier_vols,
-                y=frontier_rets,
-                mode="lines+markers",
-                name="Efficient Frontier",
-                line=dict(color="#00b4d8", width=2),
-                marker=dict(size=5),
-            )
-        )
+        fig.add_trace(go.Scatter(
+            x=frontier_vols,
+            y=frontier_rets,
+            mode="lines+markers",
+            name="Efficient Frontier",
+            line=dict(color="#00b4d8", width=2),
+            marker=dict(size=5),
+        ))
 
-    fig.add_trace(
-        go.Scatter(
-            x=[mv_vol],
-            y=[mv_ret],
-            mode="markers",
-            name="Min Variance",
-            marker=dict(color="red", size=12, symbol="star"),
-        )
-    )
+    fig.add_trace(go.Scatter(
+        x=[mv_vol],
+        y=[mv_ret],
+        mode="markers",
+        name="Min Variance",
+        marker=dict(color="red", size=12, symbol="star"),
+    ))
 
     fig.update_layout(
         title="Efficient Frontier (Markowitz)",
@@ -106,13 +101,12 @@ def plot_sector_allocation(allocation):
     sector_allocation["Secteur"] = sector_allocation.index.map(sectors).fillna("Autre")
     sector_allocation = sector_allocation.groupby("Secteur")["Poids"].sum().reset_index()
 
-    fig = go.Figure(
-        go.Bar(
-            x=sector_allocation["Secteur"],
-            y=sector_allocation["Poids"],
-            marker_color="#00b4d8",
-        )
-    )
+    fig = go.Figure(go.Bar(
+        x=sector_allocation["Secteur"],
+        y=sector_allocation["Poids"],
+        marker_color="#00b4d8",
+    ))
+
     fig.update_layout(
         title="Sector Allocation",
         xaxis_title="Sector",
@@ -121,27 +115,26 @@ def plot_sector_allocation(allocation):
         template="plotly_dark",
         height=400,
     )
-    st.plotly_chart(fig, use_container_width=True, key="sector_allocation")  
+
+    st.plotly_chart(fig, use_container_width=True, key="sector_allocation")
 
 
 def plot_correlation_matrix(returns):
     corr = returns.corr()
 
-    fig = go.Figure(
-        data=go.Heatmap(
-            z=corr.values,
-            x=corr.columns.tolist(),
-            y=corr.columns.tolist(),
-            colorscale="RdBu",
-            zmid=0,
-            zmin=-1,
-            zmax=1,
-            colorbar=dict(title="Correlation", tickformat=".1f"),
-            text=np.round(corr.values, 2),
-            texttemplate="%{text}",
-            textfont=dict(size=10),
-        )
-    )
+    fig = go.Figure(data=go.Heatmap(
+        z=corr.values,
+        x=corr.columns.tolist(),
+        y=corr.columns.tolist(),
+        colorscale="RdBu",
+        zmid=0,
+        zmin=-1,
+        zmax=1,
+        colorbar=dict(title="Correlation", tickformat=".1f"),
+        text=np.round(corr.values, 2),
+        texttemplate="%{text}",
+        textfont=dict(size=10),
+    ))
 
     fig.update_layout(
         title="Asset Correlation Matrix",
