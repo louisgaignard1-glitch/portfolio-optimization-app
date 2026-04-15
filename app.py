@@ -43,8 +43,8 @@ if data.empty:
 
 returns = data.pct_change().dropna()
 
-mu = returns.mean() * 252
-Sigma = returns.cov() * 252
+mu    = returns.mean() * 252
+Sigma = returns.cov()  * 252
 
 result_min_var, allocation = optimize_portfolio(mu, Sigma, assets)
 
@@ -54,9 +54,7 @@ result_min_var, allocation = optimize_portfolio(mu, Sigma, assets)
 # --------------------------------------------------
 
 for asset in assets:
-
     key = f"slider_{asset}"
-
     if key not in st.session_state:
         st.session_state[key] = float(allocation.loc[asset, "Poids"])
 
@@ -66,17 +64,11 @@ for asset in assets:
 # --------------------------------------------------
 
 def normalize_weights():
-
     weights = np.array([st.session_state[f"slider_{a}"] for a in assets])
-
     total = weights.sum()
-
     if total > 0:
-
         normalized = weights / total
-
         for i, asset in enumerate(assets):
-
             st.session_state[f"slider_{asset}"] = float(normalized[i])
 
 
@@ -89,7 +81,6 @@ st.header("🎛️ Manual Allocation")
 cols = st.columns(len(assets))
 
 for i, asset in enumerate(assets):
-
     cols[i].slider(
         asset,
         min_value=0.0,
@@ -97,20 +88,14 @@ for i, asset in enumerate(assets):
         key=f"slider_{asset}"
     )
 
-
 weights = np.array([st.session_state[f"slider_{a}"] for a in assets])
 
 st.write(f"Weight sum: {weights.sum():.2f}")
 
-
-st.button(
-    "Normalize weights",
-    on_click=normalize_weights
-)
-
+st.button("Normalize weights", on_click=normalize_weights)
 
 manual_allocation = pd.DataFrame(
-    {"Poids":[st.session_state[f"slider_{a}"] for a in assets]},
+    {"Poids": [st.session_state[f"slider_{a}"] for a in assets]},
     index=assets
 )
 
@@ -140,7 +125,8 @@ fig_alloc.add_trace(go.Bar(
 fig_alloc.update_layout(
     barmode="group",
     title="Allocation comparison",
-    yaxis_title="Weight"
+    yaxis_title="Weight",
+    template="plotly_dark",
 )
 
 st.plotly_chart(fig_alloc, use_container_width=True)
@@ -151,6 +137,13 @@ st.plotly_chart(fig_alloc, use_container_width=True)
 # --------------------------------------------------
 
 display_metrics(result_min_var, mu, Sigma, returns)
+
+
+# --------------------------------------------------
+# EFFICIENT FRONTIER
+# --------------------------------------------------
+
+st.header("📉 Efficient Frontier")
 
 plot_efficient_frontier(result_min_var, mu, Sigma, assets)
 
@@ -174,14 +167,12 @@ plot_correlation_matrix(returns)
 
 
 # --------------------------------------------------
-# BACKTEST
+# BACKTEST  (backtest_portfolio now renders the chart itself)
 # --------------------------------------------------
 
 st.header("📈 Historical Cumulative Performance")
 
-portfolio_performance = backtest_portfolio(data, weights_used)
-
-st.line_chart(portfolio_performance)
+backtest_portfolio(data, weights_used)
 
 
 # --------------------------------------------------
@@ -190,20 +181,18 @@ st.line_chart(portfolio_performance)
 
 st.header("🔮 Monte Carlo Simulation")
 
-n_sim = st.sidebar.slider("Monte Carlo simulations",100,800,300)
+n_sim = st.sidebar.slider("Monte Carlo simulations", 100, 800, 300)
 
-percentiles,var_95,cvar_95 = monte_carlo_simulation(
+percentiles, var_95, cvar_95 = monte_carlo_simulation(
     mu,
     Sigma,
     weights_used,
     n_simulations=n_sim
 )
 
-col1,col2 = st.columns(2)
-
-col1.metric("VaR 95%",f"{var_95:.2%}")
-col2.metric("CVaR 95%",f"{cvar_95:.2%}")
-
+col1, col2 = st.columns(2)
+col1.metric("VaR 95%",  f"{var_95:.2%}")
+col2.metric("CVaR 95%", f"{cvar_95:.2%}")
 
 fig = go.Figure()
 
@@ -211,43 +200,53 @@ fig.add_trace(go.Scatter(
     x=percentiles["p95"].index,
     y=percentiles["p95"],
     line=dict(width=0),
-    showlegend=False
+    showlegend=False,
+    name="p95",
 ))
 
 fig.add_trace(go.Scatter(
     x=percentiles["p5"].index,
     y=percentiles["p5"],
     fill="tonexty",
+    fillcolor="rgba(0,180,216,0.15)",
     name="5-95%",
-    line=dict(width=0)
+    line=dict(width=0),
 ))
 
 fig.add_trace(go.Scatter(
     x=percentiles["p75"].index,
     y=percentiles["p75"],
     line=dict(width=0),
-    showlegend=False
+    showlegend=False,
+    name="p75",
 ))
 
 fig.add_trace(go.Scatter(
     x=percentiles["p25"].index,
     y=percentiles["p25"],
     fill="tonexty",
+    fillcolor="rgba(0,180,216,0.25)",
     name="25-75%",
-    line=dict(width=0)
+    line=dict(width=0),
 ))
 
 fig.add_trace(go.Scatter(
     x=percentiles["p50"].index,
     y=percentiles["p50"],
     name="Median",
-    line=dict(width=3)
+    line=dict(width=3, color="#00b4d8"),
 ))
+
+fig.add_hline(y=1.0, line_dash="dash", line_color="gray",
+              annotation_text="Initial value")
 
 fig.update_layout(
     title="Probabilistic Fan Chart",
+    xaxis_title="Date",
+    yaxis_title="Portfolio Value (base 1)",
     hovermode="x unified",
-    template="plotly_dark"
+    template="plotly_dark",
+    height=500,
 )
 
 st.plotly_chart(fig, use_container_width=True)
