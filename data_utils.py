@@ -11,12 +11,28 @@ def get_data(tickers, start_date):
             auto_adjust=True,
             progress=False
         )
+
         if isinstance(data.columns, pd.MultiIndex):
             if "Close" in data.columns.levels[0]:
                 data = data["Close"]
             elif "Adj Close" in data.columns.levels[0]:
                 data = data["Adj Close"]
-        return data.dropna(how="all")
+
+        # Vérifiez que les données ne sont pas vides
+        if data.empty:
+            st.error("Aucune donnée téléchargée. Vérifiez les tickers ou la connexion Internet.")
+            return pd.DataFrame()
+
+        # Supprimez les colonnes avec des données manquantes
+        data = data.dropna(axis=1, how="all")
+
+        # Vérifiez qu'il reste des données après le nettoyage
+        if data.empty:
+            st.error("Aucune donnée valide après nettoyage.")
+            return pd.DataFrame()
+
+        return data
+
     except Exception as e:
-        print(e)
+        st.error(f"Erreur lors du téléchargement des données : {e}")
         return pd.DataFrame()
