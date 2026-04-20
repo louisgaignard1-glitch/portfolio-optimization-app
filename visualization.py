@@ -6,26 +6,35 @@ from scipy.optimize import minimize
 def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
     target_returns = np.linspace(mu.min(), mu.max(), 20)
     frontier_vols = []
+
     for target_return in target_returns:
         constraints = (
             {'type': 'eq', 'fun': lambda w: np.sum(w) - 1},
             {'type': 'eq', 'fun': lambda w, tr=target_return: np.dot(w, mu) - tr}
         )
+
         result = minimize(
             lambda w: np.sqrt(np.dot(w.T, np.dot(Sigma, w))),
-            np.ones(len(assets)) / len(assets),
+            x0=np.ones(len(assets)) / len(assets),
             method='SLSQP',
             bounds=tuple((0, 1) for _ in assets),
             constraints=constraints
         )
+
         if result.success:
-            frontier_vols.append(np.sqrt(np.dot(result.x.T, np.dot(Sigma, result.x))))
+            vol = np.sqrt(np.dot(result.x.T, np.dot(Sigma, result.x)))
+            frontier_vols.append(vol)
         else:
             frontier_vols.append(np.nan)
 
-    # Supprimez les valeurs NaN
-    frontier_vols = [vol for vol in frontier_vols if not np.isnan(vol)]
-    target_returns = target_returns[:len(frontier_vols)]
+    # Filtrer les valeurs NaN
+    valid_indices = [i for i, vol in enumerate(frontier_vols) if not np.isnan(vol)]
+    frontier_vols = [frontier_vols[i] for i in valid_indices]
+    target_returns = [target_returns[i] for i in valid_indices]
+
+    if len(frontier_vols) == 0:
+        st.warning("No valid points for the efficient frontier.")
+        return
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -34,14 +43,17 @@ def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
         mode='lines+markers',
         name='Frontière efficace'
     ))
+
     fig.update_layout(
         title="Frontière efficace du portefeuille",
         xaxis_title="Volatilité annualisée (écart-type)",
         yaxis_title="Rendement annualisé",
         template="plotly_dark"
     )
-    fig.update_xaxes(range=[0, 0.5])  # Limitez la volatilité à 0-50%
-    fig.update_yaxes(range=[-0.2, 0.5])  # Limitez le rendement à -20% à 50%
+
+    fig.update_xaxes(range=[0, max(frontier_vols) * 1.1])
+    fig.update_yaxes(range=[min(target_returns) * 0.9, max(target_returns) * 1.1])
+
     st.plotly_chart(fig, use_container_width=True)
 
 def plot_sector_allocation(allocation):
