@@ -48,7 +48,7 @@ if len(available_assets) < 2:
 
 if len(available_assets) < len(assets):
     missing = set(assets) - set(available_assets)
-    st.warning(f"Données indisponibles pour : {missing}. Calcul sur les actifs restants.")
+    st.info(f" Données temporairement indisponibles pour : {', '.join(missing)}. Le calcul continue sur les actifs restants.")
 
 assets = available_assets
 data = data[assets]
