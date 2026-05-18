@@ -41,6 +41,8 @@ if data.empty:
 
 returns = data.pct_change().dropna()
 
+# Ajouter ces conversions :
+returns = returns[assets]          # ← garantit que les colonnes correspondent aux assets sélectionnés
 mu = returns.mean() * 252
 Sigma = returns.cov() * 252
 
