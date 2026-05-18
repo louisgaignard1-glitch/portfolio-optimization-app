@@ -39,10 +39,21 @@ if data.empty:
     st.error("No data available.")
     st.stop()
 
-returns = data.pct_change().dropna()
+# Garder uniquement les assets effectivement téléchargés
+available_assets = [a for a in assets if a in data.columns]
 
-# Ajouter ces conversions :
-returns = returns[assets]          # ← garantit que les colonnes correspondent aux assets sélectionnés
+if len(available_assets) < 2:
+    st.error(f"Pas assez de données disponibles. Colonnes reçues : {list(data.columns)}")
+    st.stop()
+
+if len(available_assets) < len(assets):
+    missing = set(assets) - set(available_assets)
+    st.warning(f"Données indisponibles pour : {missing}. Calcul sur les actifs restants.")
+
+assets = available_assets
+data = data[assets]
+
+returns = data.pct_change().dropna()
 mu = returns.mean() * 252
 Sigma = returns.cov() * 252
 
