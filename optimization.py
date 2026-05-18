@@ -4,8 +4,11 @@ from scipy.optimize import minimize
 
 def optimize_portfolio(mu, Sigma, assets):
     n = len(assets)
+    Sigma_np = np.array(Sigma)  # ← conversion explicite en array numpy
+
     def port_vol(weights):
-        return np.sqrt(np.dot(weights.T, np.dot(Sigma, weights)))
+        return np.sqrt(np.dot(weights.T, np.dot(Sigma_np, weights)))  # ← utilise Sigma_np
+
     initial_weights = np.ones(n) / n
     constraints = ({'type': 'eq', 'fun': lambda w: np.sum(w) - 1})
     bounds = tuple((0, 1) for _ in range(n))
@@ -23,8 +26,10 @@ def optimize_portfolio(mu, Sigma, assets):
     return result_min_var, allocation
 
 def calculate_sharpe_ratio(weights, mu, Sigma, risk_free_rate=0.02):
-    port_return = np.dot(weights, mu)
-    port_vol = np.sqrt(np.dot(weights.T, np.dot(Sigma, weights)))
+    mu_np = np.array(mu)
+    Sigma_np = np.array(Sigma)
+    port_return = np.dot(weights, mu_np)
+    port_vol = np.sqrt(np.dot(weights.T, np.dot(Sigma_np, weights)))
     return float((port_return - risk_free_rate) / port_vol)
 
 def calculate_max_drawdown(returns):
